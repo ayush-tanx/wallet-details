@@ -44,7 +44,7 @@ for row in range(1, len(data)):
                     continue
                 new_record = record.copy()
                 balance = int(item['balance'])/10**int(item['contract_decimals'])   # dequantizing
-                new_record += [network, item['contract_ticker_symbol'], balance, item['pretty_quote'].strip('"')]
+                new_record += [network, item['contract_ticker_symbol'], balance, f"${item['quote']}"]
                 output_data.append(new_record)
 
 # Write modified data to a new CSV file
