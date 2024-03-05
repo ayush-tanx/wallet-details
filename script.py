@@ -7,6 +7,7 @@ from datetime import datetime
 load_dotenv()
 
 COVALENT_API_KEY = os.environ['COVALENT_API_KEY']
+include_zero_and_extra_records = False
 
 datafile = "input.csv"
 outputfile = "output/balances_{datetime_stamp}.csv"
@@ -39,11 +40,12 @@ for row in range(1, len(data)):
         wallet_details = get_wallet_details(chain_name=network, wallet_address=wallet_address)
         if wallet_details:
             for item in wallet_details['items']:
-                if item['pretty_quote']:
-                    new_record = record.copy()
-                    balance = int(item['balance'])/10**int(item['contract_decimals'])   # dequantizing
-                    new_record += [network, item['contract_ticker_symbol'], balance, item['pretty_quote'].strip('"')]
-                    output_data.append(new_record)
+                if (not item['pretty_quote'] or int(item['balance']) == 0 ) and not include_zero_and_extra_records:
+                    continue
+                new_record = record.copy()
+                balance = int(item['balance'])/10**int(item['contract_decimals'])   # dequantizing
+                new_record += [network, item['contract_ticker_symbol'], balance, item['pretty_quote'].strip('"')]
+                output_data.append(new_record)
 
 # Write modified data to a new CSV file
 with open(outputfile.format(datetime_stamp=str(datetime.now()).replace(' ', '_').replace(':', '.')), 'w', newline='') as csvfile:
