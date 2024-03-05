@@ -2,13 +2,14 @@ import os
 import csv
 import requests
 from dotenv import load_dotenv
+from datetime import datetime
 
 load_dotenv()
 
 COVALENT_API_KEY = os.environ['COVALENT_API_KEY']
 
 datafile = "input.csv"
-outputfile = "output.csv"
+outputfile = "output/balances_{datetime_stamp}.csv"
 
 api_url = 'https://api.covalenthq.com/v1/{chain_name}/address/{wallet_address}/balances_v2/?no-spam=true'
 headers = {"Content-Type": "application/json"}
@@ -44,6 +45,6 @@ for row in range(1, len(data)):
                 output_data.append(new_record)
 
 # Write modified data to a new CSV file
-with open(outputfile, 'w', newline='') as csvfile:
+with open(outputfile.format(datetime_stamp=str(datetime.now()).replace(' ', '_').replace(':', '.')), 'w', newline='') as csvfile:
     writer = csv.writer(csvfile)
     writer.writerows(output_data)
